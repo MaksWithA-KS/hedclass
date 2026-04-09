@@ -11,6 +11,7 @@ const db = mysql.createPool({
 db.getConnection((err, connection) => {
     if (err) return console.log(err.message);
     console.log("Connected successfully");
+    connection.release();
 });
 
-export default db;
+export default db.promise();
