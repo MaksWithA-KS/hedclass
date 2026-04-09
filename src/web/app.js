@@ -15,12 +15,16 @@ app.set('view engine', 'ejs');
 // Directing Express where to find EJS files
 app.set('views', path.join(__dirname, 'views'));
 
+
 // Middleware
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 
-// Test route
+// ROUTES
+
+// Home Page
 app.get('/', (req, res) => {
-    res.send('HEdClass is successfully running');
+    res.render('index');
 });
 
 // Starting the server
