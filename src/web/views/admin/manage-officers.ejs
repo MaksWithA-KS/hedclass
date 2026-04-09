@@ -1,0 +1,138 @@
+<%- include('../partials/header') %>
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
+            <li class="breadcrumb-item">
+                <a href="/admin-dashboard" class="text-decoration-none text-navy fw-bold">
+                    Admin Hub
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <%= (typeof pageTitle !=='undefined' ) ? pageTitle : 'Management' %>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Classification Officers</h2>
+        <button class="btn btn-main" data-bs-toggle="modal" data-bs-target="#addOfficerModal">
+            + Register New Officer
+        </button>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Assigned To</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% officers.forEach(o=> { %>
+                        <tr>
+                            <td class="fw-bold">
+                                <%= o.first_name %>
+                                    <%= o.last_name %>
+                            </td>
+                            <td>
+                                <%= o.email %>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-primary"
+                                    onclick="openAssignModal('<%= o.user_id %>')">
+                                    Assign to Programme
+                                </button>
+                            </td>
+                            <td class="text-end">
+                                <form action="/admin/officers/delete/<%= o.user_id %>" method="POST" class="d-inline"
+                                    onsubmit="return confirm('Are you sure you want to permanently remove this officer?');">
+                                    <button type="submit"
+                                        class="btn btn-sm btn-link text-danger text-decoration-none">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addOfficerModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Register New Staff Member</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/admin/create-officer" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="first_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" name="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Temporary Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-main">Create Account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Programme</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="/admin/assign-officer" method="POST">
+                    <div class="modal-body">
+                        <input type="hidden" name="user_id" id="modal_user_id">
+
+                        <p>Select a programme to assign to this officer:</p>
+                        <select name="programme_id" class="form-select" required>
+                            <option value="">Choose...</option>
+                            <% programmes.forEach(p=> { %>
+                                <option value="<%= p.programme_id %>">
+                                    <%= p.title %>
+                                </option>
+                                <% }); %>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-main">Link Officer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openAssignModal(userId) {
+            // 1. Set the hidden input value to the officer's ID
+            document.getElementById('modal_user_id').value = userId;
+
+            // 2. Manually trigger the Bootstrap modal
+            const myModal = new bootstrap.Modal(document.getElementById('assignModal'));
+            myModal.show();
+        }
+    </script>
+
+    <%- include('../partials/footer') %>

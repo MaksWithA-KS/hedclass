@@ -27,6 +27,15 @@ app.use(session({
     cookie: { maxAge: 3600000 }
 }));
 
+app.use((req, res, next) => {
+    res.locals.user = req.session.userId ? {
+        id: req.session.userId,
+        name: req.session.userName,
+        role: req.session.userRole
+    } : null;
+    next();
+});
+
 // ROUTES
 
 // Home Page
@@ -57,7 +66,7 @@ app.post('/login', async (req, res) => {
         req.session.userName = user.first_name;
 
         if (user.role === 'Institutional Administrator') {
-            res.redirect('#'); //Redirect to administrator dashboard
+            res.redirect('/admin-dashboard'); //Redirect to administrator dashboard
         } else {
             res.redirect('#'); // Redirect to officer dashboard
         }
@@ -65,6 +74,102 @@ app.post('/login', async (req, res) => {
         console.error(err);
         res.render('login', { error: 'Database connection error. Is MySQL running?' });
     }
+});
+
+const isAdmin = (req, res, next) => {
+    if (req.session.userRole === 'Institutional Administrator') {
+        return next();
+    }
+    res.redirect('/login');
+};
+
+const isOfficer = (req, res, next) => {
+    if (req.session.userRole === 'Classification Officer') {
+        return next();
+    }
+    res.redirect('/login');
+};
+
+app.get('/admin-dashboard', isAdmin, async (req, res) => {
+   res.render('admin-dashboard');
+});
+
+app.get('/admin/programmes', isAdmin, async (req, res) => {
+    const [progs] = await db.execute('SELECT * FROM programmes');
+    res.render('admin/manage-programmes', { programmes: progs, pageTitle: 'Programme Management'});
+});
+
+app.get('/admin/officers', isAdmin, async (req, res) => {
+    try {
+        const [officers] = await db.execute('SELECT * FROM users WHERE role = "Classification Officer"');
+        const [programmes] = await db.execute('SELECT * FROM programmes'); // Must include this!
+        
+        res.render('admin/manage-officers', { 
+            officers: officers,
+            programmes: programmes, 
+            pageTitle: 'Classification Officer Management'
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Server Error');
+    }
+});
+
+app.post('/admin/officers/delete/:id', isAdmin, async (req, res) => {
+    const userId = req.params.id;
+    try {
+        await db.execute('DELETE FROM officer_assignments WHERE user_id = ?', [userId]);
+        
+        await db.execute('DELETE FROM users WHERE user_id = ? AND role = "Classification Officer"', [userId]);
+        
+        res.redirect('/admin/officers?success=deleted');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error while deleting officer.');
+    }
+});
+
+app.post('/admin/programmes/delete/:id', isAdmin, async (req, res) => {
+    const progId = req.params.id;
+    try {
+        await db.execute('DELETE FROM officer_assignments WHERE programme_id = ?', [progId]);
+        
+        await db.execute('DELETE FROM programmes WHERE programme_id = ?', [progId]);
+        
+        res.redirect('/admin/programmes?success=deleted');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error while deleting programme.');
+    }
+});
+
+app.post('/admin/programmes/edit/:id', isAdmin, async (req, res) => {
+    const { title, y2, y3 } = req.body;
+    const progId = req.params.id;
+    
+    try {
+        await db.execute(
+            'UPDATE programmes SET title = ?, y2_weighting = ?, y3_weighting = ? WHERE programme_id = ?',
+            [title, y2, y3, progId]
+        );
+        res.redirect('/admin/programmes?success=updated');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error while updating programme.');
+    }
+});
+
+app.get('/officer-dashboard', (req, res) => {
+    res.render('officer-dashboard');
+});
+
+app.get('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+        }
+        res.redirect('/');
+    });
 });
 
 // Starting the server
