@@ -8,50 +8,51 @@
 body {
     background-color: var(--light-grey);
     color: #333;
-    font-family: 'Segoe UI', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .main-header {
     background-color: var(--uni-navy);
-    padding: 1.2rem 0;
     border-bottom: 4px solid var(--uni-gold);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
-.navbar-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 .brand-logo {
     color: var(--white) !important;
-    font-size: 1.75rem;
+    font-size: 28px;
     font-weight: 700;
-    text-decoration: none;
     letter-spacing: -0.5px;
 }
 
-.nav-menu {
-    display: flex;
-    gap: 25px;
-}
-
-.nav-item {
+.main-header .nav-link {
     color: rgba(255, 255, 255, 0.9) !important;
-    text-decoration: none;
     font-weight: 500;
     transition: color 0.3s ease;
 }
 
-.nav-item:hover {
-    color: var(--uni-gold);
+.main-header .nav-link:hover {
+    color: var(--uni-gold) !important;
 }
 
 .content-area {
     background: var(--white);
-    padding: 3rem;
-    margin-top: 2rem;
+    padding: 48px;
+    margin-top: 32px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    box-shadow: 0 4px 6px rbga(0, 0, 0, 0.05);
 }
+
+.btn-main {
+    background-color: var(--uni-navy);
+    color: var(--white);
+    border: 2px solid var(--uni-navy);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-main:hover {
+    background-color: var(--uni-gold);
+    border-color: var(--uni-gold);
+    color: var(--uni-navy);
+}
+

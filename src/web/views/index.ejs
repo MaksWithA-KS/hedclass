@@ -1,29 +1,49 @@
 <%- include('partials/header') %>
 
-    <section class="hero-container">
+    <section class="container px-4 py-5 my-5 text-center">
+        <h1 class="display-5 fw-bold mb-3">HEdClass Management System</h1>
+        <div class="col-lg-6 mx-auto">
 
-        <div class="hero-content">
-            <h1 class="hero-title">HEdClass Management System</h1>
-            <p class="hero-subtitle">
-                A centralised portal for managing university programmes, student module registrations, and final grade classification.
+            <p class="lead mb-4 text-muted">
+                A centralised portal for managing university programmes, student module registrations, and final grade
+                classification.
             </p>
 
-            <div class="hero-actions">
-                <a href="/login" class="btn-main">System Login</a>
-                <a href="#about" class="btn-outline">Learn More</a>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+
+                <a href="/login" class="btn btn-main btn-lg px-4 gap-3">System Login</a>
+                <a href="#about" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+
             </div>
+
         </div>
     </section>
 
-<section id="about" class="info-grid">
-    <div class="info-card">
-        <h3>Programme Weighting</h3>
-        <p>Configure L5 and L6 weightings to ensure accurate degree classifications.</p>
-    </div>
-    <div class="info-card">
-        <h3>Student Tracking</h3>
-        <p>Monitor student progress across various modules and academic years.</p>
-    </div>
-</section>
+    <section id="about" class="container px-4 py-5">
 
-<%- include('partials/footer') %>
+        <div class="row g-4 row-cols-1 row-cols-md-2">
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 bg-light">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="fs-4 fw-semibold mb-3">Programme Weighting</h3>
+                        <p class="card-text text-muted">Configure L5 and L6 weightings to ensure accurate degree classifications.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 bg-light">
+                    <div class="card-body p-4 text-center">
+                        <h3 class="fs-4 fw-semibold mb-3">Student Tracking</h3>
+                        <p class="card-text text-muted">Monitor student progress across various modules and academic years.</p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+    </section>
+
+
+    <%- include('partials/footer') %>

@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+
+<div class="col-md-6 col-lg-5">
+
+<div class="card shadow-sm border-0 bg-light">
+    <div class="card-body p-4 p-md-5">
+        <h2 class="text-center fw-bold mb-3">System Login</h2>
+        <p class="text-center text-muted mb-4">Please enter your login details</p>
+        <% if (locals.error) { %>
+            <div class="alert alert-danger text-center" role="alert">
+                <%= error %>
+            </div>
+        <% } %>
+        <form action="/login" method="POST">
+            <div class="mb-3">
+                <label for="username" class="form-label fw-semibold">Email Address</label>
+                <input type="email" class="form-control" id="username" name="username" required placeholder="e.g. user@hedclass.ac.uk">
+            </div>
+            <div class="mb-4">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••"
+            </div>
+
+            <button type="submit" class="btn btn-main w-100 py-2">Log In</button>
+        </form>
+        <div class="text-center mt-4">
+            <p class="text-muted small mb-0">Issues logging in? Contact the system administrator.</p>
+        </div>
+    </div>
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+<%- include('partials/footer') %>
