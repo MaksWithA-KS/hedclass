@@ -47,6 +47,8 @@ CREATE TABLE progr_modules (
     title VARCHAR(255) NOT NULL,
     credits INT NOT NULL,
     academic_year INT NOT NULL
+    programme_id INT NOT NULL,
+    FOREIGN KEY (programme_id) REFERENCES programmes(programme_id) ON DELETE CASCADE
 );
 
 -- 6. Grades Table

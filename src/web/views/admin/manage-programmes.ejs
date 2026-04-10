@@ -28,6 +28,7 @@
                         <th>ID</th>
                         <th>Title</th>
                         <th>L5 / L6 Weights</th>
+                        <th>Assigned Officers</th>
                         <th class="text-end">Actions</th>
                     </tr>
                 </thead>
@@ -41,6 +42,17 @@
                             </td>
                             <td>
                                 <%= (p.y2_weighting * 100) %>% / <%= (p.y3_weighting * 100) %>%
+                            </td>
+                            <td>
+                                <% if (p.assigned_officers) { %>
+                                    <span class="badge bg-light text-dark border shadow-sm px-2 py-1">
+                                        <%= p.assigned_officers %>
+                                    </span>
+                                <% } else { %>
+                                    <span class="text-muted fst-italic" style="font-size: 0.9em;">
+                                        No staff assigned
+                                    </span>
+                                <% } %>
                             </td>
                             <td class="text-end">
                                 <button type="button" class="btn btn-sm btn-outline-secondary me-2"

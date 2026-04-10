@@ -1,0 +1,69 @@
+<%- include('partials/header') %>
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
+            <li class="breadcrumb-item active" aria-current="page">
+                <%= typeof pageTitle !=='undefined' ? pageTitle : 'Officer Dashboard' %>
+            </li>
+        </ol>
+    </nav>
+
+    <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center">
+        <div>
+            <h2>Welcome, <%= user.name %>
+            </h2>
+            <p class="text-muted">Select a programme to manage student classification</p>
+        </div>
+        <span class="badge bg-info text-dark border shadow-sm px-3 py-2">Classification Officer</span>
+    </div>
+
+    <div class="row g-4">
+        <% if (programmes.length===0) { %>
+            <div class="col-12">
+                <div class="alert alert-warning shadow-sm border-0">
+                    <strong>No assignments found.</strong> You currently have no programmes assigned to you. Please
+                    contact the System Administrator.
+                </div>
+            </div>
+            <% } else { %>
+                <% programmes.forEach(prog=> { %>
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card h-100 shadow-sm border-0 border-top border-4 border-primary">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <small class="text-uppercase fw-bold text-muted">Programme #<%= prog.programme_id %>
+                                    </small>
+                                </div>
+                                <h4 class="card-title fw-bold text-navy mb-3">
+                                    <%= prog.title %>
+                                </h4>
+                                <div class="bg-light p-3 rounded mb-4 border">
+                                    <div class="row text-center">
+                                        <div class="col-6 border-end">
+                                            <p class="small text-muted mb-1">Level 5 Weight</p>
+                                            <p class="fw-bold mb-0">
+                                                <%= (prog.y2_weighting * 100) %>%
+                                            </p>
+                                        </div>
+                                        <div class="col-6">
+                                            <p class="small text-muted mb-1">Level 6 Weight</p>
+                                            <p class="fw-bold mb-0">
+                                                <%= (prog.y3_weighting * 100) %>%
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-0 p-3 pt-0">
+                                <a href="/officer/programme/<%= prog.programme_id %>/students"
+                                    class="btn btn-main w-100">
+                                    Manage Students
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                        <% } %>
+    </div>
+
+    <%- include('partials/footer') %>

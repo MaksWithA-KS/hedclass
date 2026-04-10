@@ -42,10 +42,18 @@
                                 <%= o.email %>
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary"
-                                    onclick="openAssignModal('<%= o.user_id %>')">
-                                    Assign to Programme
-                                </button>
+                                <% if (o.assigned_programmes) { %>
+                                    <div class="mb-2 text-navy fw-bold" style="font-size: 0.9em;">
+                                        <%= o.assigned_programmes %>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="mb-2 text-muted fst-italic" style="font-size: 0.9em;">
+                                            Unassigned
+                                        </div>
+                                        <% } %>
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="openAssignModal('<%= o.user_id %>')">
+                                            + Assign Programme
+                                        </button>
                             </td>
                             <td class="text-end">
                                 <form action="/admin/officers/delete/<%= o.user_id %>" method="POST" class="d-inline"
