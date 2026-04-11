@@ -169,6 +169,27 @@ app.post('/admin/officers/delete/:id', isAdmin, async (req, res) => {
     }
 });
 
+app.post('/admin/officers/add', isAdmin, async (req, res) => {
+    const { first_name, last_name, email, password } = req.body;
+
+    try {
+        await db.execute(
+            'INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, "Classification Officer")',
+            [first_name, last_name, email, password]
+        );
+
+        res.redirect('/admin/officers?success=created');
+    } catch (err) {
+        console.error(err);
+
+        if (err.code === 'ER_DUP_ENTRY') {
+            res.status(400).send('Error: A user with that email address already exists in the system.');
+        } else {
+            res.status(500).send('System error while creating new Classification Officer.')
+        }
+    }
+});
+
 app.post('/admin/programmes/delete/:id', isAdmin, async (req, res) => {
     const progId = req.params.id;
     try {
@@ -196,6 +217,21 @@ app.post('/admin/programmes/edit/:id', isAdmin, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('System error while updating programme.');
+    }
+});
+
+app.post('/admin/programmes/add', isAdmin, async (req,res) => {
+    const { title, y2, y3 } = req.body;
+
+    try {
+        await db.execute(
+            'INSERT INTO programmes (title, y2_weighting, y3_weighting) VALUES (?, ?, ?)',
+            [title, y2, y3]
+        );
+        res.redirect('/admin/programmes?success=created');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error while creating new programme.');
     }
 });
 
