@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import db from './db.js';
 import session from 'express-session';
+import bcrypt from 'bcrypt';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,14 +53,20 @@ app.post('/login', async (req, res) => {
 
     try {
         const [users] = await db.execute(
-            'SELECT * FROM users WHERE email = ? AND password_hash = ?',
-            [username, password]
+            'SELECT * FROM users WHERE email = ?',
+            [username]
         );
 
         if (users.length === 0) {
             return res.render('login', { error: 'Invalid email or password.' });
         }
         const user = users[0];
+
+        const match = await bcrypt.compare(password, user.password_hash);
+
+        if (!match) {
+            return res.render('login', { error: 'Invalid email or password.' });
+        }
 
         req.session.userId = user.user_id;
         req.session.userRole = user.role;
@@ -173,9 +180,12 @@ app.post('/admin/officers/add', isAdmin, async (req, res) => {
     const { first_name, last_name, email, password } = req.body;
 
     try {
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         await db.execute(
             'INSERT INTO users (first_name, last_name, email, password_hash, role) VALUES (?, ?, ?, ?, "Classification Officer")',
-            [first_name, last_name, email, password]
+            [first_name, last_name, email, hashedPassword]
         );
 
         res.redirect('/admin/officers?success=created');
@@ -431,18 +441,17 @@ app.post('/officer/programme/:id/student/add', isOfficer, async (req, res) => {
 
 app.post('/officer/student/:id/override', isOfficer, async (req, res) => {
     const studentId = req.params.id;
-    const { new_classification } = req.body;
+    const { new_classification, rationale } = req.body;
 
     try {
         const [studentData] = await db.execute('SELECT programme_id FROM progr_students WHERE student_id = ?', [studentId]);
-
         if (studentData.length === 0) {
             return res.status(404).send('Student not found');
         }
 
         const [authCheck] = await db.execute(
             'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
-            [req.session.userId, studentData[0].programme_id]
+            [req.session.userId, studentData[0].programmeId]
         );
 
         if (authCheck.length === 0) {
@@ -450,8 +459,8 @@ app.post('/officer/student/:id/override', isOfficer, async (req, res) => {
         }
 
         await db.execute(
-            'UPDATE progr_students SET final_classification = ?, manual_override = TRUE WHERE student_id = ?',
-            [new_classification, studentId]
+            'UPDATE progr_students SET final_classification = ?, manual_override = TRUE, override_rationale = ? WHERE student_id = ?',
+            [new_classification, rationale, studentId]
         );
 
         res.redirect('/officer/programme/' + studentData[0].programme_id + '/students');

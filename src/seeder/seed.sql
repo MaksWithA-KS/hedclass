@@ -5,14 +5,14 @@ INSERT INTO
 VALUES
     (
         'admin@hedclass.ac.uk',
-        'password123',
+        '$2a$10$1ReJmS/6h7j5TND9GIeOVO4IjMJCHsjrS0doUsbJl.lhue/OzV.yu',
         'Maks',
         'Admin',
         'Institutional Administrator'
     ),
     (
         'officer@hedclass.ac.uk',
-        'password456',
+        '$2a$10$0cIhwp8ApOAPKNCw0Gd.UOMNRN1iQMe65vjLYOHbrnba5F7q6GGKG',
         'Sarah',
         'Officer',
         'Classification Officer'
