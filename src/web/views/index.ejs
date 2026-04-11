@@ -10,40 +10,27 @@
             </p>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-
-                <a href="/login" class="btn btn-main btn-lg px-4 gap-3">System Login</a>
-                <a href="#about" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
-
+                <a href="/login" class="btn btn-main btn-lg px-5 shadow-sm">System Login</a>
             </div>
 
         </div>
     </section>
 
     <section id="about" class="container px-4 py-5">
-
-        <div class="row g-4 row-cols-1 row-cols-md-2">
-
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 bg-light">
-                    <div class="card-body p-4 text-center">
-                        <h3 class="fs-4 fw-semibold mb-3">Programme Weighting</h3>
-                        <p class="card-text text-muted">Configure L5 and L6 weightings to ensure accurate degree classifications.</p>
-                    </div>
+        <div id="about-section" class="container py-5 mt-5 border-top">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="fw-bold mb-3">Streamlining Academic Classifications</h2>
+                    <p class="lead text-muted">HEdClass replaces vulnerable spreadsheet-based grading with a
+                        deterministic, secure, and fully auditable web platform.</p>
+                    <ul class="list-unstyled mt-4 d-inline-block text-start">
+                        <li class="mb-2">✓ <strong>Automated Rules:</strong> Instantly calculates 30/70 weightings.</li>
+                        <li class="mb-2">✓ <strong>Role-Based Security:</strong> Strict access control for Officers and Admins.</li>
+                        <li class="mb-2">✓ <strong>Audit Ready:</strong> Full support for manual board overrides.</li>
+                    </ul>
                 </div>
             </div>
-
-            <div class="col">
-                <div class="card h-100 shadow-sm border-0 bg-light">
-                    <div class="card-body p-4 text-center">
-                        <h3 class="fs-4 fw-semibold mb-3">Student Tracking</h3>
-                        <p class="card-text text-muted">Monitor student progress across various modules and academic years.</p>
-                    </div>
-                </div>
-            </div>
-            
         </div>
-
     </section>
 
-
-    <%- include('partials/footer') %>
+<%- include('partials/footer') %>
