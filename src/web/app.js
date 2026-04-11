@@ -91,7 +91,7 @@ const isOfficer = (req, res, next) => {
 };
 
 app.get('/admin-dashboard', isAdmin, async (req, res) => {
-   res.render('admin-dashboard');
+    res.render('admin-dashboard');
 });
 
 app.get('/admin/programmes', isAdmin, async (req, res) => {
@@ -115,7 +115,7 @@ app.get('/admin/programmes', isAdmin, async (req, res) => {
     }
 });
 
-app.get('/admin/officers', isAdmin, async (req, res) => {    
+app.get('/admin/officers', isAdmin, async (req, res) => {
     try {
         const query = `
         SELECT u.*, GROUP_CONCAT(p.title SEPARATOR ', ') AS assigned_programmes
@@ -128,10 +128,10 @@ app.get('/admin/officers', isAdmin, async (req, res) => {
 
         const [officers] = await db.execute(query);
         const [programmes] = await db.execute('SELECT * FROM programmes');
-        
-        res.render('admin/manage-officers', { 
+
+        res.render('admin/manage-officers', {
             officers: officers,
-            programmes: programmes, 
+            programmes: programmes,
             pageTitle: 'Classification Officer Management'
         });
     } catch (err) {
@@ -159,9 +159,9 @@ app.post('/admin/officers/delete/:id', isAdmin, async (req, res) => {
     const userId = req.params.id;
     try {
         await db.execute('DELETE FROM officer_assignments WHERE user_id = ?', [userId]);
-        
+
         await db.execute('DELETE FROM users WHERE user_id = ? AND role = "Classification Officer"', [userId]);
-        
+
         res.redirect('/admin/officers?success=deleted');
     } catch (err) {
         console.error(err);
@@ -173,9 +173,9 @@ app.post('/admin/programmes/delete/:id', isAdmin, async (req, res) => {
     const progId = req.params.id;
     try {
         await db.execute('DELETE FROM officer_assignments WHERE programme_id = ?', [progId]);
-        
+
         await db.execute('DELETE FROM programmes WHERE programme_id = ?', [progId]);
-        
+
         res.redirect('/admin/programmes?success=deleted');
     } catch (err) {
         console.error(err);
@@ -186,7 +186,7 @@ app.post('/admin/programmes/delete/:id', isAdmin, async (req, res) => {
 app.post('/admin/programmes/edit/:id', isAdmin, async (req, res) => {
     const { title, y2, y3 } = req.body;
     const progId = req.params.id;
-    
+
     try {
         await db.execute(
             'UPDATE programmes SET title = ?, y2_weighting = ?, y3_weighting = ? WHERE programme_id = ?',
@@ -275,7 +275,7 @@ app.get('/officer/student/:id', isOfficer, async (req, res) => {
             JOIN programmes p ON s.programme_id = p.programme_id
             WHERE s.student_id = ?
         `, [studentId]);
-        
+
         if (studentData.length === 0) {
             return res.status(404).send('Student not found');
         }
@@ -298,11 +298,11 @@ app.get('/officer/student/:id', isOfficer, async (req, res) => {
             ORDER BY m.academic_year ASC, m.module_id ASC
             `, [studentId]);
 
-            res.render('officer/student-profile', {
-                student: student,
-                grades: grades,
-                pageTitle: 'Student Profile'
-            });
+        res.render('officer/student-profile', {
+            student: student,
+            grades: grades,
+            pageTitle: 'Student Profile'
+        });
     } catch (err) {
         console.error(err);
         res.status(500).send('System error loading student profile.')
@@ -422,6 +422,38 @@ app.post('/officer/student/:id/override', isOfficer, async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).send('System error applying manual override.')
+    }
+});
+
+app.post('/officer/student/:studentId/grade/:gradeId/edit', isOfficer, async (req, res) => {
+    const { studentId, gradeId } = req.params;
+    const { new_mark } = req.body;
+
+    try {
+        const [studentData] = await db.execute('SELECT programme_id FROM progr_students WHERE student_id = ?', [studentId]);
+
+        if (studentData.length === 0) {
+            return res.status(404).send('Student not found.');
+        }
+
+        const [authCheck] = await db.execute(
+            'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
+            [req.session.userId, studentData[0].programme_id]);
+
+        if (authCheck.length === 0) {
+            return res.status(403).send('Unauthorised to modify records for this programme.');
+        }
+
+        await db.execute(
+            'UPDATE progr_grades SET mark = ? WHERE grade_id = ? AND student_id = ?',
+            [new_mark, gradeId, studentId]
+        );
+
+        res.redirect('/officer/student/' + studentId);
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error updating module mark.')
     }
 });
 
