@@ -37,8 +37,8 @@ CREATE TABLE progr_students (
     last_name VARCHAR(100) NOT NULL,
     programme_id INT,
     manual_override BOOLEAN DEFAULT FALSE,
-    final_classification VARCHAR(100), -- Increased to 100 for "Not eligible..."
-    override_rationale TEXT,            -- Added for C5
+    final_classification VARCHAR(100),
+    override_rationale TEXT,
     FOREIGN KEY (programme_id) REFERENCES programmes(programme_id)
 );
 
@@ -47,7 +47,7 @@ CREATE TABLE progr_modules (
     module_id VARCHAR(20) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     credits INT NOT NULL,
-    academic_year INT NOT NULL,        -- Added missing comma here
+    academic_year INT NOT NULL,
     programme_id INT NOT NULL,
     FOREIGN KEY (programme_id) REFERENCES programmes(programme_id) ON DELETE CASCADE
 );
