@@ -9,6 +9,15 @@
         </ol>
     </nav>
 
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <h5 class="card-title fw-bold text-secondary mb-3">Cohort Distribution</h5>
+            <div style="height: 300px; width: 100%; display: flex; justify-content: center;">
+                <canvas id="classificationChart"></canvas>
+            </div>
+        </div>
+    </div>
+
     <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center">
         <div>
             <h2>
@@ -134,7 +143,10 @@
                             </div>
                         </div>
                         <p class="text-muted small mt-2">
-                            The candidate will be added to the <strong><%= programme.title %></strong> classification cohort with a default status of 'Pending'. Module marks must be inputted via their individual profile.
+                            The candidate will be added to the <strong>
+                                <%= programme.title %>
+                            </strong> classification cohort with a default status of 'Pending'. Module marks must be
+                            inputted via their individual profile.
                         </p>
                     </div>
                     <div class="modal-footer bg-light">
@@ -151,5 +163,60 @@
             &larr; Back to My Programmes
         </a>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const students = <%- JSON.stringify(students) %>;
+
+            const tally = {
+                'First Class Honours (1st)': 0,
+                'Upper Second Class (2:1)': 0,
+                'Lower Second Class (2:2)': 0,
+                'Third Class Honours (3rd)': 0,
+                'Fail': 0,
+                'Pending': 0
+            };
+            students.forEach(student => {
+                const classification = student.final_classification || 'Pending';
+                if (tally[classification] !== undefined) {
+                    tally[classification]++;
+                } else {
+                    tally['Pending']++;
+                }
+            });
+
+            const ctx = document.getElementById('classificationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(tally),
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: Object.values(tally),
+                        backgroundColor: [
+                            '#198754', // First (Green)
+                            '#0d6efd', // 2:1 (Blue)
+                            '#0dcaf0', // 2:2 (Cyan)
+                            '#ffc107', // 3rd (Yellow)
+                            '#dc3545', // Fail (Red)
+                            '#6c757d'  // Pending (Grey)
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        });
+    </script>
 
     <%- include('../partials/footer') %>
