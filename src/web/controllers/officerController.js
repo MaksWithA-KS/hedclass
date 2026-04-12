@@ -232,3 +232,55 @@ export const editGrade = async (req, res) => {
         res.status(500).send('System error updating module mark.')
     }
 };
+
+export const exportRoster = async (req, res) => {
+    const progId = req.params.id;
+
+    try {
+        const [authCheck] = await db.execute(
+            'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
+            [req.session.userId, progId]
+        );
+
+        if (authCheck.length === 0) {
+            return res.status(403).send('Unauthorised to export records for this programme.');
+        }
+
+        const [progData] = await db.execute('SELECT title FROM programmes WHERE programme_id = ?', [progId]);
+        const safeTitle = progData[0].title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+
+        const query = `
+        SELECT
+            s.student_id, s.first_name, s.last_name, s.final_classification, s.manual_override,
+            ROUND(SUM(CASE WHEN m.academic_year = 2 THEN g.mark * m.credits ELSE 0 END) /
+                NULLIF(SUM(CASE WHEN m.academic_year = 2 THEN m.credits ELSE 0 END), 0), 2) AS level_5_average,
+            ROUND(SUM(CASE WHEN m.academic_year = 3 THEN g.mark * m.credits ELSE 0 END) / 
+                NULLIF(SUM(CASE WHEN m.academic_year = 3 THEN m.credits ELSE 0 END), 0), 2) AS level_6_average
+        FROM progr_students s
+        LEFT JOIN progr_grades g ON s.student_id = g.student_id
+        LEFT JOIN progr_modules m ON g.module_id = m.module_id
+        WHERE s.programme_id = ?
+        GROUP BY s.student_id
+        `;
+
+        const [students] = await db.execute(query, [progId]);
+
+        let csv = 'Student ID,First Name,Last Name,Level 5 Average,Level 6 Average,Final Classification,Manual Override\n';
+
+        students.forEach(student => {
+            const l5 = student.level_5_average || 'N/A';
+            const l6 = student.level_6_average || 'N/A';
+            const classification = student.final_classification || 'Pending';
+            const override = student.manual_override ? 'Yes' : 'No';
+
+            csv += `"${student.student_id}","${student.first_name}","${student.last_name}",${l5},${l6},"${classification}","${override}"\n`;
+        });
+
+        res.header('Content-Type', 'text/csv');
+        res.attachment(`board_export_${safeTitle}.csv`);
+        return res.send(csv);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error generating CSV export.');
+    }
+};

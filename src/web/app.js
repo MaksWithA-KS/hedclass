@@ -41,7 +41,6 @@ app.use((req, res, next) => {
 
 // ROUTES
 
-// Home Page
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', officerRoutes);
