@@ -1,8 +1,8 @@
 -- 1. Users (Admin: Gandalf | Officers: Sherlock & Obi-Wan)
 INSERT INTO users (email, password_hash, first_name, last_name, role) VALUES 
-('gandalf@qub.ac.uk', '$2a$10$2nFvorCBT7uaxfKL/fkGK.GOGK9vguyIVC3inSc24sjdm8G6Tl.De', 'Gandalf', 'The Grey', 'Institutional Administrator'),
-('holmes@qub.ac.uk', '$2a$10$2nFvorCBT7uaxfKL/fkGK.GOGK9vguyIVC3inSc24sjdm8G6Tl.De', 'Sherlock', 'Holmes', 'Classification Officer'),
-('kenobi@qub.ac.uk', '$2a$10$2nFvorCBT7uaxfKL/fkGK.GOGK9vguyIVC3inSc24sjdm8G6Tl.De', 'Obi-Wan', 'Kenobi', 'Classification Officer');
+('gandalf@qub.ac.uk', '$2a$10$2nFvorCBT7uaxfKL/fkGK.GOGK9vguyIVC3inSc24sjdm8G6Tl.De', 'Gandalf', 'The Grey', 'Institutional Administrator'), -- yoshllntpass!1
+('holmes@qub.ac.uk', '$2a$10$2nFvorCBT7uaxfKL/fkGK.GOGK9vguyIVC3inSc24sjdm8G6Tl.De', 'Sherlock', 'Holmes', 'Classification Officer'), -- elementary2$
+('kenobi@qub.ac.uk', '$2a$10$2nFvorCBT7uaxfKL/fkGK.GOGK9vguyIVC3inSc24sjdm8G6Tl.De', 'Obi-Wan', 'Kenobi', 'Classification Officer'); --helloth3re
 
 -- 2. Programmes
 INSERT INTO programmes (title, y2_weighting, y3_weighting) VALUES 
