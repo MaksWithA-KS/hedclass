@@ -35,9 +35,9 @@ export const getStudentRoster = async (req, res) => {
         const query = `
         SELECT
             s.student_id, s.first_name, s.last_name, s.final_classification, s.manual_override,
-            ROUND(SUM(CASE WHEN m.academic_year = 2 THEN g.mark * m.credits ELSE 0 END) /
+            ROUND(SUM(CASE WHEN m.academic_year = 2 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) /
                 NULLIF(SUM(CASE WHEN m.academic_year = 2 THEN m.credits ELSE 0 END), 0), 2) AS level_5_average,
-            ROUND(SUM(CASE WHEN m.academic_year = 3 THEN g.mark * m.credits ELSE 0 END) / 
+            ROUND(SUM(CASE WHEN m.academic_year = 3 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) / 
                 NULLIF(SUM(CASE WHEN m.academic_year = 3 THEN m.credits ELSE 0 END), 0), 2) AS level_6_average
         FROM progr_students s
         LEFT JOIN progr_grades g ON s.student_id = g.student_id
@@ -112,9 +112,13 @@ export const calculateGrades = async (req, res) => {
         const query = `
             SELECT
                 s.student_id,
-                ROUND(SUM(CASE WHEN m.academic_year = 2 THEN g.mark * m.credits ELSE 0 END) / 
+                SUM(CASE WHEN m.academic_year = 1 AND g.mark >= 40 THEN m.credits ELSE 0 END) AS y1_credits,
+                SUM(CASE WHEN m.academic_year = 2 AND g.mark >= 40 THEN m.credits ELSE 0 END) AS y2_credits,
+                SUM(CASE WHEN m.academic_year = 3 AND g.mark >= 40 THEN m.credits ELSE 0 END) AS y3_credits,
+                SUM(CASE WHEN g.mark < 40 THEN 1 ELSE 0 END) AS total_fails,
+                ROUND(SUM(CASE WHEN m.academic_year = 2 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) / 
                       NULLIF(SUM(CASE WHEN m.academic_year = 2 THEN m.credits ELSE 0 END), 0), 2) AS l5_avg,
-                ROUND(SUM(CASE WHEN m.academic_year = 3 THEN g.mark * m.credits ELSE 0 END) / 
+                ROUND(SUM(CASE WHEN m.academic_year = 3 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) / 
                       NULLIF(SUM(CASE WHEN m.academic_year = 3 THEN m.credits ELSE 0 END), 0), 2) AS l6_avg
             FROM progr_students s
             LEFT JOIN progr_grades g ON s.student_id = g.student_id
@@ -125,21 +129,23 @@ export const calculateGrades = async (req, res) => {
         const [students] = await db.execute(query, [progId]);
 
         for (let student of students) {
-            if (student.l5_avg !== null && student.l6_avg !== null) {
+            let classification = 'Pending';
+
+            if (student.y1_credits < 120 || student.y2_credits < 120 || student.y3_credits < 120 || student.total_fails > 0) {
+                classification = 'Not eligiblefor Honours Classification';
+            } else if (student.l5_avg !== null && student.l6_avg !== null) {
                 const finalMark = (student.l5_avg * y2Weight) + (student.l6_avg * y3Weight);
-                let classification = 'Pending';
 
                 if (finalMark >= 70) classification = 'First Class Honours (1st)';
                 else if (finalMark >= 60) classification = 'Upper Second Class (2:1)';
                 else if (finalMark >= 50) classification = 'Lower Second Class (2:2)';
                 else if (finalMark >= 40) classification = 'Third Class Honours (3rd)';
                 else classification = 'Fail';
-
-                await db.execute(
-                    'UPDATE progr_students SET final_classification = ? WHERE student_id = ?',
-                    [classification, student.student_id]
-                );
             }
+            await db.execute(
+                'UPDATE progr_students SET final_classification = ? WHERE student_id = ?',
+                [classification, student.student_id]
+            );
         }
         res.redirect('/officer/programme/' + progId + '/students');
     } catch (err) {
@@ -206,7 +212,8 @@ export const overrideClassification = async (req, res) => {
 
 export const editGrade = async (req, res) => {
     const { studentId, gradeId } = req.params;
-    const { new_mark } = req.body;
+    const { new_mark, is_resit } = req.body;
+    const resitValue = is_resit === 'on' ? 1 : 0;
     try {
         const [studentData] = await db.execute('SELECT programme_id FROM progr_students WHERE student_id = ?', [studentId]);
         if (studentData.length === 0) {
@@ -222,8 +229,8 @@ export const editGrade = async (req, res) => {
         }
 
         await db.execute(
-            'UPDATE progr_grades SET mark = ? WHERE grade_id = ? AND student_id = ?',
-            [new_mark, gradeId, studentId]
+            'UPDATE progr_grades SET mark = ?, is_resit = ? WHERE grade_id = ? AND student_id = ?',
+            [new_mark, resitValue, gradeId, studentId]
         );
 
         res.redirect('/officer/student/' + studentId);
@@ -252,9 +259,9 @@ export const exportRoster = async (req, res) => {
         const query = `
         SELECT
             s.student_id, s.first_name, s.last_name, s.final_classification, s.manual_override,
-            ROUND(SUM(CASE WHEN m.academic_year = 2 THEN g.mark * m.credits ELSE 0 END) /
+            ROUND(SUM(CASE WHEN m.academic_year = 2 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) /
                 NULLIF(SUM(CASE WHEN m.academic_year = 2 THEN m.credits ELSE 0 END), 0), 2) AS level_5_average,
-            ROUND(SUM(CASE WHEN m.academic_year = 3 THEN g.mark * m.credits ELSE 0 END) / 
+            ROUND(SUM(CASE WHEN m.academic_year = 3 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) / 
                 NULLIF(SUM(CASE WHEN m.academic_year = 3 THEN m.credits ELSE 0 END), 0), 2) AS level_6_average
         FROM progr_students s
         LEFT JOIN progr_grades g ON s.student_id = g.student_id

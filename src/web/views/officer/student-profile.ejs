@@ -1,143 +1,218 @@
 <%- include('../partials/header') %>
 
-<nav aria-label="breadcrumb" class="mb-4">
-    <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
-        <li class="breadcrumb-item"><a href=/officer-dashboard">Officer Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="/officer/programme/<%= student.programme_id %>/students"><%= student.programme_title %></a></li>
-        <li class="breadcrumb-item active" aria-current="page"><%= student.first_name %> <%= student.last_name %></li>
-    </ol>
-</nav>
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
+            <li class="breadcrumb-item"><a href="/officer-dashboard">Officer Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/officer/programme/<%= student.programme_id %>/students">
+                    <%= student.programme_title %>
+                </a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <%= student.first_name %>
+                    <%= student.last_name %>
+            </li>
+        </ol>
+    </nav>
 
-<div class="row mb-4">
-    <div class="col-md-8">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 class="mb-0"><%= student.furst_name %> <%= student.last_name %></h2>
-                        <p class="text-muted mb-0">Student ID: <%= student.student_id %></p>
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 class="mb-0">
+                                <%= student.first_name %>
+                                    <%= student.last_name %>
+                            </h2>
+                            <p class="text-muted mb-0">Student ID: <%= student.student_id %>
+                            </p>
+                        </div>
+                        <div class="text-end">
+                            <p class="small text-muted mb-1">Current Classification</p>
+                            <h4 class="mb-0">
+                                <span
+                                    class="badge <%= student.final_classification === 'Fail' ? 'bg-danger' : (student.final_classification === 'Pending' ? 'bg-warning text-dark' : 'bg-success') %>">
+                                    <%= student.final_classification %>
+                                </span>
+                            </h4>
+                        </div>
                     </div>
-                    <div class="text-end">
-                        <p class="small text-muted mb-1">Current Classification</p>
-                        <h4 class="mb-0">
-                            <span class="badge <%= student.final_classification === 'Fail' ? 'bg-danger' : (student.final_classification === 'Pending' ? 'bg-warning text-dark' : 'bg-success') %>">
-                                <%= student.final_classification %>
-                            </span>
-                        </h4>
-                    </div>
-                </div>
 
-                <% if (student.manual_override) { %>
-                    <div class="alert alert-warning mt-4 shadow-sm">
-                        <h5 class="alert-heading fw-bold">Manual Override Applied</h5>
-                        <hr>
-                        <p class="mb-0">
-                            <strong>Decision Rationale:</strong>
-                            <%= student.override_rationale ? student.override_rationale : 'No rationale provided.' %>
-                        </p>
-                    </div>    
-                <% } %>
-
-                <h5 class="fw-bold mb-3 border-bottom pb-2">Academic Record</h5>
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Module ID</th>
-                                <th>Title</th>
-                                <th>Year</th>
-                                <th class="text-center">Credits</th>
-                                <th class="text-center">Mark</th>
-                                <th class="text-end pe-3">Actions</th>
-                            </tr>
-                        </thead>
-                       <tbody>
-                        <% if (grades.length === 0) { %>
-                            <tr>
-                                <td colspan="6" class="text-center py-3 text-muted">No module marks recorded.</td>
-                            </tr>    
-                        <% } else { %>
-                            <% grades.forEach(grade => { %>
-                                <tr>
-                                    <td class="fw-bold"><%= grade.module_id %></td>
-                                    <td><%= grade.title %></td>
-                                    <td>Year <%= grade.academic_year %></td>
-                                    <td class="text-center text-muted"><%= grade.credits %></td>
-                                    <td class="text-center fw-bold">
-                                        <span id="display-mark-<%= grade.grade_id %>"><%= grade.mark %>%</span>
-                                        <input type="number" name="new_mark" id="input-mark-<%= grade.grade_id %>" value="<%= grade.mark %>" min="0" max="100" class="form-control form-control-sm d-none mx-auto" style="width: 80px;" form="edit-form-<%= grade.grade_id %>" required>
-                                    </td>
-                                    <td class="text-end pe-3">
-                                        <form id="edit-form-<%= grade.grade_id %>" action="/officer/student/<%= student.student_id %>/grade/<%= grade.grade_id %>/edit" method="POST" class="m-0 p-0">
-                                            <button type="button" id="btn-edit-<%= grade.grade_id %>" class="btn btn-sm btn-outline-primary" onclick="toggleEditMode(<%= grade.grade_id %>)">Edit</button>
-                                            <button type="submit" id="btn-save-<%= grade.grade_id %>" class="btn btn-sm btn-success d-none">Save Changes</button>
-                                            <button type="button" id="btn-cancel-<%= grade.grade_id %>" class="btn btn-sm btn-outline-secondary d-none" onclick="cancelEditMode(<%= grade.grade_id %>, <%= grade.mark %>)">Cancel</button>
-                                        </form>
-                                    </td>
-                                </tr>    
-                            <% }); %>    
+                    <% if (student.manual_override) { %>
+                        <div class="alert alert-warning mt-4 shadow-sm">
+                            <h5 class="alert-heading fw-bold">Manual Override Applied</h5>
+                            <hr>
+                            <p class="mb-0">
+                                <strong>Decision Rationale:</strong>
+                                <%= student.override_rationale ? student.override_rationale : 'No rationale provided.'
+                                    %>
+                            </p>
+                        </div>
                         <% } %>
-                       </tbody>
-                    </table>
+
+                            <h5 class="fw-bold mb-3 border-bottom pb-2">Academic Record</h5>
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover align-middle">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Module ID</th>
+                                            <th>Title</th>
+                                            <th>Year</th>
+                                            <th class="text-center">Credits</th>
+                                            <th class="text-center">Mark</th>
+                                            <th class="text-end pe-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% if (grades.length===0) { %>
+                                            <tr>
+                                                <td colspan="6" class="text-center py-3 text-muted">No module marks
+                                                    recorded.</td>
+                                            </tr>
+                                            <% } else { %>
+                                                <% grades.forEach(grade=> { %> <tr>
+                                                        <td class="fw-bold">
+                                                            <%= grade.module_id %>
+                                                        </td>
+                                                        <td>
+                                                            <%= grade.title %>
+                                                        </td>
+                                                        <td>Year <%= grade.academic_year %>
+                                                        </td>
+                                                        <td class="text-center text-muted">
+                                                            <%= grade.credits %>
+                                                        </td>
+
+                                                        <td class="text-center fw-bold">
+                                                            <div id="display-container-<%= grade.grade_id %>">
+                                                                <span id="display-mark-<%= grade.grade_id %>">
+                                                                    <%= grade.mark %>%
+                                                                </span>
+                                                                <% if (grade.is_resit) { %>
+                                                                    <span class="badge bg-info text-dark ms-1"
+                                                                        style="font-size: 0.7rem;">Resit</span>
+                                                                    <% } %>
+                                                            </div>
+
+                                                            <div id="edit-container-<%= grade.grade_id %>"
+                                                                class="d-none">
+                                                                <input type="number" name="new_mark"
+                                                                    id="input-mark-<%= grade.grade_id %>"
+                                                                    value="<%= grade.mark %>" min="0" max="100"
+                                                                    class="form-control form-control-sm mx-auto mb-1"
+                                                                    style="width: 80px;"
+                                                                    form="edit-form-<%= grade.grade_id %>" required>
+
+                                                                <div
+                                                                    class="form-check form-switch d-flex justify-content-center">
+                                                                    <input class="form-check-input" type="checkbox"
+                                                                        name="is_resit"
+                                                                        id="input-resit-<%= grade.grade_id %>"
+                                                                        <%=grade.is_resit ? 'checked' : '' %>
+                                                                    form="edit-form-<%= grade.grade_id %>">
+                                                                        <label class="form-check-label small ms-1"
+                                                                            for="input-resit-<%= grade.grade_id %>">Resit</label>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+
+                                                        <td class="text-end pe-3">
+                                                            <form id="edit-form-<%= grade.grade_id %>"
+                                                                action="/officer/student/<%= student.student_id %>/grade/<%= grade.grade_id %>/edit"
+                                                                method="POST" class="m-0 p-0">
+
+                                                                <button type="button"
+                                                                    id="btn-edit-<%= grade.grade_id %>"
+                                                                    class="btn btn-sm btn-outline-primary"
+                                                                    onclick="toggleEditMode(<%= grade.grade_id %>)">
+                                                                    Edit
+                                                                </button>
+
+                                                                <button type="submit"
+                                                                    id="btn-save-<%= grade.grade_id %>"
+                                                                    class="btn btn-sm btn-success d-none">
+                                                                    Save Changes
+                                                                </button>
+
+                                                                <button type="button"
+                                                                    id="btn-cancel-<%= grade.grade_id %>"
+                                                                    class="btn btn-sm btn-outline-secondary d-none"
+                                                                    onclick="cancelEditMode(<%= grade.grade_id %>, <%= grade.mark %>, <%= grade.is_resit || 0 %>)">
+                                                                    Cancel
+                                                                </button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                    <% }); %>
+                                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0 border-top border-4 border-danger">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-danger mb-3">Board Override</h5>
+                    <p class="small text-muted mb-4">Action an official override of the automated decision.</p>
+                    <form action="/officer/student/<%= student.student_id %>/override" method="POST">
+                        <div class="mb-3">
+                            <label for="override_classification" class="form-label fw-bold">Award Degree</label>
+                            <select class="form-select" id="override_classification" name="new_classification" required>
+                                <option value="" disabled selected>Select classification...</option>
+                                <option value="First Class Honours (1st)">First Class Honours (1st)</option>
+                                <option value="Upper Second Class (2:1)">Upper Second Class (2:1)</option>
+                                <option value="Lower Second Class (2:2)">Lower Second Class (2:2)</option>
+                                <option value="Third Class Honours (3rd)">Third Class Honours (3rd)</option>
+                                <option value="Fail">Fail</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Reason for Override</label>
+                            <textarea name="rationale" class="form-control" rows="3" required
+                                placeholder="e.g. Medical mitigation approved by examination board."></textarea>
+                            <div class="form-text">This rationale will be recorded for audit purposes.</div>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 fw-bold">Save Override</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 border-top border-4 border-danger">
-            <div class="card-body">
-                <h5 class="card-title fw-bold text-danger mb-3">Board Override</h5>
-                <p class="small text-muted mb-4">Action an official override of the automated decision.</p>
-                <form action="/officer/student/<%= student.student_id %>/override" method="POST">
-                    <div class="mb-3">
-                        <label for="override_classification" class="form-label fw-bold">Award Degree</label>
-                        <select class="form-select" id="override_classification" name="new_classification" required>
-                            <option value="" disabled selected>Select classification...</option>
-                            <option value="First Class Honours (1st)">First Class Honours (1st)</option>
-                            <option value="Upper Second Class (2:1)">Upper Second Class (2:1)</option>
-                            <option value="Lower Second Class (2:2)">Lower Second Class (2:2)</option>
-                            <option value="Third Class Honours (3rd)">Third Class Honours (3rd)</option>
-                            <option value="Fail">Fail</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Reason for Override</label>
-                        <textarea name="rationale" class="form-control" rows="3" required placeholder="e.g. Medical mitigation approved by examination board."></textarea>
-                        <div class="form-text">This rationale will be recorded for audit purposes.</div>
-                    </div>
-                    <button type="submit" class="btn btn-danger w-100 fw-bold">Save Override</button>
-                </form>
-            </div>
-        </div>
+
+    <div class="d-flex justify-content-start mt-4 mb-4">
+        <a href="/officer/programme/<%= student.programme_id %>/students"
+            class="btn btn-outline-secondary fw-bold shadow-sm">
+            &larr; Back to Student Roster
+        </a>
     </div>
-</div>
 
-<div class="d-flex justify-content-start mt-4 mb-4">
-    <a href="/officer/programme/<%= student.programme_id %>/students" class="btn btn-outline-secondary fw-bold shadow-sm">
-        &larr; Back to Student Roster
-    </a>
-</div>
+    <%- include('../partials/footer') %>
 
-<%- include('../partials/footer') %>
+        <script>
+            function toggleEditMode(gradeId) {
+                // Hide display, show edit
+                document.getElementById('display-container-' + gradeId).classList.add('d-none');
+                document.getElementById('edit-container-' + gradeId).classList.remove('d-none');
 
-<script>
-    function toggleEditMode(gradeId) {
-        document.getElementById('display-mark-' + gradeId).classList.add('d-none');
-        document.getElementById('input-mark-' + gradeId).classList.remove('d-none');
-        document.getElementById('btn-edit-' + gradeId).classList.add('d-none');
-        document.getElementById('btn-save-' + gradeId).classList.remove('d-none');
-        document.getElementById('btn-cancel-' + gradeId).classList.remove('d-none');
-    }
+                // Buttons
+                document.getElementById('btn-edit-' + gradeId).classList.add('d-none');
+                document.getElementById('btn-save-' + gradeId).classList.remove('d-none');
+                document.getElementById('btn-cancel-' + gradeId).classList.remove('d-none');
+            }
 
-    function cancelEditMode(gradeId, originalMark) {
-        document.getElementById('display-mark-' + gradeId).classList.remove('d-none');
+            function cancelEditMode(gradeId, originalMark, originalResit) {
+                // Show display, hide edit
+                document.getElementById('display-container-' + gradeId).classList.remove('d-none');
+                document.getElementById('edit-container-' + gradeId).classList.add('d-none');
 
-        const inputElement = document.getElementById('input-mark-' + gradeId);
-        inputElement.classList.add('d-none');
-        inputElement.value = originalMark;
+                // Reset inputs to original values
+                document.getElementById('input-mark-' + gradeId).value = originalMark;
+                document.getElementById('input-resit-' + gradeId).checked = (originalResit == 1);
 
-        document.getElementById('btn-edit-' + gradeId).classList.remove('d-none');
-        document.getElementById('btn-save-' + gradeId).classList.add('d-none');
-        document.getElementById('btn-cancel-' + gradeId).classList.add('d-none');
-    }
-</script>
+                // Buttons
+                document.getElementById('btn-edit-' + gradeId).classList.remove('d-none');
+                document.getElementById('btn-save-' + gradeId).classList.add('d-none');
+                document.getElementById('btn-cancel-' + gradeId).classList.add('d-none');
+            }
+        </script>

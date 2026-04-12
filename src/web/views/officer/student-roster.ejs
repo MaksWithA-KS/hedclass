@@ -177,12 +177,13 @@
             const students = <%- JSON.stringify(students) %>;
 
             const tally = {
-                'First Class Honours (1st)': 0,
-                'Upper Second Class (2:1)': 0,
-                'Lower Second Class (2:2)': 0,
-                'Third Class Honours (3rd)': 0,
-                'Fail': 0,
-                'Pending': 0
+            'First Class Honours (1st)': 0,
+            'Upper Second Class (2:1)': 0,
+            'Lower Second Class (2:2)': 0,
+            'Third Class Honours (3rd)': 0,
+            'Not eligible for Honours Classification': 0,
+            'Fail': 0,
+            'Pending': 0
             };
             students.forEach(student => {
                 const classification = student.final_classification || 'Pending';
@@ -206,6 +207,7 @@
                             '#0d6efd', // 2:1 (Blue)
                             '#0dcaf0', // 2:2 (Cyan)
                             '#ffc107', // 3rd (Yellow)
+                            '#fd7e14', // Not Eligible (Orange)
                             '#dc3545', // Fail (Red)
                             '#6c757d'  // Pending (Grey)
                         ],
