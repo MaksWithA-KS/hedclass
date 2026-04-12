@@ -259,6 +259,7 @@ export const exportRoster = async (req, res) => {
         const query = `
         SELECT
             s.student_id, s.first_name, s.last_name, s.final_classification, s.manual_override,
+            s.override_rationale,
             ROUND(SUM(CASE WHEN m.academic_year = 2 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) /
                 NULLIF(SUM(CASE WHEN m.academic_year = 2 THEN m.credits ELSE 0 END), 0), 2) AS level_5_average,
             ROUND(SUM(CASE WHEN m.academic_year = 3 THEN (CASE WHEN g.is_resit = 1 AND g.mark > 40 THEN 40 ELSE g.mark END) * m.credits ELSE 0 END) / 
@@ -272,15 +273,18 @@ export const exportRoster = async (req, res) => {
 
         const [students] = await db.execute(query, [progId]);
 
-        let csv = 'Student ID,First Name,Last Name,Level 5 Average,Level 6 Average,Final Classification,Manual Override\n';
-
+        let csv = 'Student ID,First Name,Last Name,Level 5 Average,Level 6 Average,Final Classification,Manual Override,Decision Rationale\n';
         students.forEach(student => {
             const l5 = student.level_5_average || 'N/A';
             const l6 = student.level_6_average || 'N/A';
             const classification = student.final_classification || 'Pending';
             const override = student.manual_override ? 'Yes' : 'No';
+            
+            const rationale = student.override_rationale 
+                ? student.override_rationale.replace(/(\r\n|\n|\r)/gm, " ") 
+                : 'N/A';
 
-            csv += `"${student.student_id}","${student.first_name}","${student.last_name}",${l5},${l6},"${classification}","${override}"\n`;
+            csv += `"${student.student_id}","${student.first_name}","${student.last_name}",${l5},${l6},"${classification}","${override}","${rationale}"\n`;
         });
 
         res.header('Content-Type', 'text/csv');
