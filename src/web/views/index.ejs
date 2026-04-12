@@ -10,7 +10,11 @@
             </p>
 
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <a href="/login" class="btn btn-main btn-lg px-5 shadow-sm">System Login</a>
+                <% if (session && session.userRole) { %>
+                    <a href="/dashboard" class="btn btn-main btn-lg px-5 shadow-sm">Go To Dashboard</a>    
+                <% } else {%>
+                    <a href="/login" class="btn btn-main btn-lg px-5 shadow-sm">System Login</a>    
+                <% } %>
             </div>
 
         </div>

@@ -2,7 +2,9 @@ import db from '../db.js';
 import bcrypt from 'bcrypt';
 
 export const getHomePage = (req, res) => {
-    res.render('index');
+    res.render('index', {
+        session: req.session
+    });
 };
 
 export const getLoginPage = (req, res) => {
@@ -41,6 +43,22 @@ export const processLogin = async (req, res) => {
     } catch (err) {
         console.error(err);
         res.render('login', { error: 'Database connection error. Is MySQL running?' });
+    }
+};
+
+export const dashboardRedirect = (req, res) => {
+    // 1. Check if they are logged in using YOUR session variable
+    if (!req.session || !req.session.userRole) {
+        return res.redirect('/'); 
+    }
+
+    // 2. Route them based on userRole
+    if (req.session.userRole === 'Institutional Administrator') {
+        return res.redirect('/admin-dashboard');
+    } else if (req.session.userRole === 'Classification Officer') {
+        return res.redirect('/officer-dashboard');
+    } else {
+        return res.redirect('/'); 
     }
 };
 
