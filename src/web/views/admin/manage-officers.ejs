@@ -1,5 +1,7 @@
+<!--Inject the global header partial-->
 <%- include('../partials/header') %>
 
+    <!--Breadcrumb-->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
             <li class="breadcrumb-item">
@@ -13,6 +15,7 @@
         </ol>
     </nav>
 
+    <!--Page header-->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Classification Officers</h2>
         <button class="btn btn-main" data-bs-toggle="modal" data-bs-target="#addOfficerModal">
@@ -20,6 +23,7 @@
         </button>
     </div>
 
+    <!--Data table-->
     <div class="card shadow-sm border-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -42,6 +46,7 @@
                                 <%= o.email %>
                             </td>
                             <td>
+                                <!--Displaying assigned programmes-->
                                 <% if (o.assigned_programmes) { %>
                                     <div class="mb-2 text-navy fw-bold" style="font-size: 0.9em;">
                                         <%= o.assigned_programmes %>
@@ -51,11 +56,13 @@
                                             Unassigned
                                         </div>
                                         <% } %>
+                                        <!--Triggers the assign modal via custom JS function to pass the user ID-->
                                         <button type="button" class="btn btn-sm btn-outline-primary" onclick="openAssignModal('<%= o.user_id %>')">
                                             + Assign Programme
                                         </button>
                             </td>
                             <td class="text-end">
+                                <!--Delete an officer function-->
                                 <form action="/admin/officers/delete/<%= o.user_id %>" method="POST" class="d-inline"
                                     onsubmit="return confirm('Are you sure you want to permanently remove this officer?');">
                                     <button type="submit"
@@ -69,6 +76,14 @@
         </div>
     </div>
 
+    <!--Contextual Back Navigation-->
+    <div class="d-flex justify-content-start mt-4 mb-4">
+        <a href="/admin-dashboard" class="btn btn-outline-secondary fw-bold shadow-sm">
+            &larr; Back to Administrator Dashboard
+        </a>
+    </div>
+
+    <!--Register new officer modal-->
     <div class="modal fade" id="addOfficerModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -76,7 +91,7 @@
                     <h5 class="modal-title">Register New Staff Member</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form action="/admin/officer/add" method="POST">
+                <form action="/admin/officers/add" method="POST">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">First Name</label>
@@ -104,6 +119,7 @@
         </div>
     </div>
 
+    <!--Assign officer to programme modal-->
     <div class="modal fade" id="assignModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -134,6 +150,7 @@
         </div>
     </div>
 
+    <!--Client-side script to handle dynamic modal population-->
     <script>
         function openAssignModal(userId) {
             // 1. Set the hidden input value to the officer's ID
@@ -145,4 +162,5 @@
         }
     </script>
 
-    <%- include('../partials/footer') %>
+<!--Inject global footer partial-->
+<%- include('../partials/footer') %>

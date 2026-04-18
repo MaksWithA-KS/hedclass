@@ -1,5 +1,6 @@
 import db from '../db.js';
 
+// Dashboard Logic
 export const getOfficerDashboard = async (req, res) => {
     try {
         const query = `
@@ -19,9 +20,11 @@ export const getOfficerDashboard = async (req, res) => {
     }
 };
 
+// Student Roster logic
 export const getStudentRoster = async (req, res) => {
     const progId = req.params.id;
     try {
+        // Strict data-level security. Verifying logged in user is assigned to this specific programme
         const [authCheck] = await db.execute(
             'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
             [req.session.userId, progId]
@@ -32,6 +35,7 @@ export const getStudentRoster = async (req, res) => {
 
         const [progData] = await db.execute('SELECT * FROM programmes WHERE programme_id = ?', [progId]);
 
+        // Calculates real-time L5 and L6 averages strictly for display purposes
         const query = `
         SELECT
             s.student_id, s.first_name, s.last_name, s.final_classification, s.manual_override,
@@ -59,6 +63,7 @@ export const getStudentRoster = async (req, res) => {
     }
 };
 
+// Student Profile logic
 export const getStudentProfile = async (req, res) => {
     const studentId = req.params.id;
     try {
@@ -74,6 +79,7 @@ export const getStudentProfile = async (req, res) => {
         }
 
         const student = studentData[0];
+        // Security check
         const [authCheck] = await db.execute(
             'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
             [req.session.userId, student.programme_id]
@@ -102,13 +108,16 @@ export const getStudentProfile = async (req, res) => {
     }
 };
 
+// Core Classification Engine
 export const calculateGrades = async (req, res) => {
     const progId = req.params.id;
     try {
+        // Fetch weighting specific to given programme
         const [progData] = await db.execute('SELECT y2_weighting, y3_weighting FROM programmes WHERE programme_id = ?', [progId]);
         const y2Weight = parseFloat(progData[0].y2_weighting);
         const y3Weight = parseFloat(progData[0].y3_weighting);
 
+        // Core calculation query. Handles resit capping and null safety mathematically
         const query = `
             SELECT
                 s.student_id,
@@ -131,9 +140,11 @@ export const calculateGrades = async (req, res) => {
         for (let student of students) {
             let classification = 'Pending';
 
+            // Eligibility check. Requires 120 credits per year and zero outstanding fails
             if (student.y1_credits < 120 || student.y2_credits < 120 || student.y3_credits < 120 || student.total_fails > 0) {
-                classification = 'Not eligiblefor Honours Classification';
+                classification = 'Not eligible for Honours Classification';
             } else if (student.l5_avg !== null && student.l6_avg !== null) {
+                // Apply dynamic weighting
                 const finalMark = (student.l5_avg * y2Weight) + (student.l6_avg * y3Weight);
 
                 if (finalMark >= 70) classification = 'First Class Honours (1st)';
@@ -142,6 +153,7 @@ export const calculateGrades = async (req, res) => {
                 else if (finalMark >= 40) classification = 'Third Class Honours (3rd)';
                 else classification = 'Fail';
             }
+            // Persist the calculated outcome
             await db.execute(
                 'UPDATE progr_students SET final_classification = ? WHERE student_id = ?',
                 [classification, student.student_id]
@@ -154,6 +166,7 @@ export const calculateGrades = async (req, res) => {
     }
 };
 
+// Create new student
 export const addStudent = async (req, res) => {
     const progId = req.params.id;
     const { student_id, first_name, last_name } = req.body;
@@ -180,36 +193,42 @@ export const addStudent = async (req, res) => {
     }
 };
 
-export const overrideClassification = async (req, res) => {
+// Add new module to a student's profile
+export const addModuleGrade = async (req, res) => {
     const studentId = req.params.id;
-    const { new_classification, rationale } = req.body;
+    const { module_id, module_title, academic_year, credits, mark, is_resit } = req.body;
+    const resitValue = is_resit ? 1 : 0;
+
     try {
         const [studentData] = await db.execute('SELECT programme_id FROM progr_students WHERE student_id = ?', [studentId]);
-        if (studentData.length === 0) {
-            return res.status(404).send('Student not found');
-        }
-
+        if (studentData.length === 0) return res.status(404).send('Student not found.');
+        
         const [authCheck] = await db.execute(
             'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
             [req.session.userId, studentData[0].programme_id]
         );
+        if (authCheck.length === 0) return res.status(403).send('Unauthorised.');
 
-        if (authCheck.length === 0) {
-            return res.status(403).send('Unauthorised to modify this student');
-        }
-
+        // Insert module into global repository if it doesn't exist
         await db.execute(
-            'UPDATE progr_students SET final_classification = ?, manual_override = TRUE, override_rationale = ? WHERE student_id = ?',
-            [new_classification, rationale, studentId]
+            'INSERT IGNORE INTO progr_modules (module_id, title, credits, academic_year) VALUES (?, ?, ?, ?)',
+            [module_id, module_title, credits, academic_year]
         );
 
-        res.redirect('/officer/programme/' + studentData[0].programme_id + '/students');
+        // Record the specific student's grade
+        await db.execute(
+            'INSERT INTO progr_grades (student_id, module_id, mark, is_resit) VALUES (?, ?, ?, ?)',
+            [studentId, module_id, mark, resitValue]
+        );
+
+        res.redirect('/officer/student/' + studentId);
     } catch (err) {
         console.error(err);
-        res.status(500).send('System error applying manual override.')
+        res.status(500).send('System error recording module grade.');
     }
 };
 
+// Edit a student's grade for a specific module
 export const editGrade = async (req, res) => {
     const { studentId, gradeId } = req.params;
     const { new_mark, is_resit } = req.body;
@@ -240,6 +259,38 @@ export const editGrade = async (req, res) => {
     }
 };
 
+// Manual Override logic
+export const overrideClassification = async (req, res) => {
+    const studentId = req.params.id;
+    const { new_classification, rationale } = req.body;
+    try {
+        const [studentData] = await db.execute('SELECT programme_id FROM progr_students WHERE student_id = ?', [studentId]);
+        if (studentData.length === 0) {
+            return res.status(404).send('Student not found');
+        }
+
+        const [authCheck] = await db.execute(
+            'SELECT * FROM officer_assignments WHERE user_id = ? AND programme_id = ?',
+            [req.session.userId, studentData[0].programme_id]
+        );
+
+        if (authCheck.length === 0) {
+            return res.status(403).send('Unauthorised to modify this student');
+        }
+
+        await db.execute(
+            'UPDATE progr_students SET final_classification = ?, manual_override = TRUE, override_rationale = ? WHERE student_id = ?',
+            [new_classification, rationale, studentId]
+        );
+
+        res.redirect('/officer/programme/' + studentData[0].programme_id + '/students');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('System error applying manual override.')
+    }
+};
+
+// CSV export for Board of Examiners
 export const exportRoster = async (req, res) => {
     const progId = req.params.id;
 

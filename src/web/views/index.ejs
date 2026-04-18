@@ -1,6 +1,8 @@
+<!--Inject the global header partial-->
 <%- include('partials/header') %>
 
-    <section class="container px-4 py-5 my-5 text-center">
+<!--Hero Section-->    
+<section class="container px-4 py-5 my-5 text-center">
         <h1 class="display-5 fw-bold mb-3">HEdClass Management System</h1>
         <div class="col-lg-6 mx-auto">
 
@@ -9,10 +11,14 @@
                 classification.
             </p>
 
+            <!--Call to action container-->
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                <% if (session && session.userRole) { %>
+                <!--Routing based on session state-->
+                <% if (user) { %>
+                    <!--If logged in, direct to dashboard-->
                     <a href="/dashboard" class="btn btn-main btn-lg px-5 shadow-sm">Go To Dashboard</a>    
                 <% } else {%>
+                    <!--If logged out direct to log in page-->
                     <a href="/login" class="btn btn-main btn-lg px-5 shadow-sm">System Login</a>    
                 <% } %>
             </div>
@@ -20,6 +26,7 @@
         </div>
     </section>
 
+    <!--About section-->
     <section id="about" class="container px-4 py-5">
         <div id="about-section" class="container py-5 mt-5 border-top">
             <div class="row justify-content-center">
@@ -37,4 +44,5 @@
         </div>
     </section>
 
-<%- include('partials/footer') %>
+<!--Inject global footer partial-->
+    <%- include('partials/footer') %>

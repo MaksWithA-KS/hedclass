@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-
+ 
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HEdClass System</title>
+    <!--Bootstrap-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--Custom CSS styling-->
     <link rel="stylesheet" href="/styles.css">
 
 </head>
 
 <body>
 
+    <!--Main navigation bar-->
     <header class="navbar navbar-expand-lg navbar-dark main-header">
         <div class="container">
 
-            <a class="navbar-brand brand-logo" href="/">HEdClass</a>
+            <a class="navbar-brand brand-logo d-flex align-items-center" href="/">
+                <!--Dual logo implementation - depends on dark mode toggle -->
+                <img src="/images/HEdClass Light Mode.png" alt="HEdClass Logo" class="logo-img logo-light me-2">
+                <img src="/images/HEdClass Dark Mode.png" alt="HEdClass Logo" class="logo-img logo-dark me-2">
+            </a>
+            <!--Mobile toggle button for collapsible navbar-->
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -27,8 +35,10 @@
                         <a class="nav-link" href="/dashboard">Dashboard</a>
                     </li>
 
+                    <!--UI rendering based on session state. The 'user' object is injected globally through res.locals in app.js-->
                     <% if (user) { %>
                         <li class="nav-item">
+                            <!--Greets the logged in user by name-->
                             <span class="nav-link text-light me-3">Hello, <%= user.name %></span>
                         </li>
                         <li class="nav-item">
@@ -47,4 +57,5 @@
 
     </header>
 
+    <!--Opens the main content wrapper. Closed in footer.ejs-->
     <main class="container content-area">

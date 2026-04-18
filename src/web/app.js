@@ -7,6 +7,7 @@ import authRoutes from './routes/authRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import officerRoutes from './routes/officerRoutes.js';
 
+// ES Module workaround to define the current directory path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -15,14 +16,13 @@ const PORT = 3000;
 
 // Configuring EJS
 app.set('view engine', 'ejs');
-
-// Directing Express where to find EJS files
 app.set('views', path.join(__dirname, 'views'));
 
-
 // Middleware
-app.use(express.static(path.join(__dirname, '../../public')));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, '../../public'))); // Directing where to find image files
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+
+// Configuring sessions
 app.use(session({
     secret: 'hedclass-secret-key',
     resave: false,
@@ -30,6 +30,7 @@ app.use(session({
     cookie: { maxAge: 3600000 }
 }));
 
+// Extracting user session data
 app.use((req, res, next) => {
     res.locals.user = req.session.userId ? {
         id: req.session.userId,
@@ -39,8 +40,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// ROUTES
-
+// Routes
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', officerRoutes);

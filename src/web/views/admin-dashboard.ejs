@@ -1,27 +1,31 @@
+<!--Inject the global header partial-->
 <%- include('partials/header') %>
 
+<!--Admin dashboard header-->
 <div class="dashboard-header mb-4">
     <h2>Welcome, <%= user.name %></h2>
     <p class="text-muted">Institutional Administrator Control Panel</p>
 </div>
 
+<!--Main navigation panel-->
 <div class="text-center py-5">
     <p class="lead text-muted mb-5">Select a management area to begin.</p>
 
+    <!--Manage programmes portal-->
     <div class="row justify-content-center g-4">
         <div class="col-md-4">
             <a href="/admin/programmes" class="btn btn-main btn-lg w-100 py-4 shadow-sm">
-                <div class="fs-2 mb-2">📚</div>
                 Manage Programmes
             </a>
         </div>
+        <!--Manage officers portal-->
         <div class="col-md-4">
             <a href="/admin/officers" class="btn btn-outline-primary btn-lg w-100 py-4 shadow-sm">
-                <div class="fs-2 mb-2">👥</div>
                 Manage Officers
             </a>
         </div>
     </div>
 </div>
 
+<!--Inject global footer partial-->
 <%- include('partials/footer') %>

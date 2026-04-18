@@ -1,14 +1,17 @@
+<!--Inject the global header partial-->
 <%- include('../partials/header') %>
 
-    <nav aria-label="breadcrumb" class="mb-4">
+<!--Breadcrumb-->    
+<nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
-            <li class="breadcrumb-item"><a href=/officer-dashboard">Officer Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="/officer-dashboard">Officer Dashboard</a></li>
             <li class="breadcrumb-item active" aria-current="page">
                 <%= programme.title %>
             </li>
         </ol>
     </nav>
 
+    <!--Classification Bar Chart-->
     <div class="card shadow-sm border-0 mb-4">
         <div class="card-body">
             <h5 class="card-title fw-bold text-secondary mb-3">Cohort Distribution</h5>
@@ -18,6 +21,7 @@
         </div>
     </div>
 
+    <!--Programme Header-->
     <div class="dashboard-header mb-4 d-flex justify-content-between align-items-center">
         <div>
             <h2>
@@ -28,16 +32,19 @@
         </div>
 
         <div>
+            <!--Execute classification engine trigger-->
             <form action="/officer/programme/<%= programme.programme_id %>/calculate" method="POST" class="d-inline">
                 <button type="submit" class="btn btn-warning shadow-sm me-2 fw-bold text-dark">
                     Execute Classification Rules
                 </button>
             </form>
 
+            <!--Add student button-->
             <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addStudentModal">
                 + Add Student
             </button>
 
+            <!--CSV export button-->
             <a href="/officer/programme/<%= programme.programme_id %>/export"
                 class="btn btn-outline-secondary shadow-sm">
                 Export Board CSV
@@ -46,6 +53,7 @@
     </div>
 
 
+    <!--Data table-->
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
@@ -89,6 +97,7 @@
                                             </span>
                                         </td>
                                         <td>
+                                            <!--Badges based on Award-->
                                             <% if (student.final_classification==='Pending' ) { %>
                                                 <span class="badge bg-warning text-dark">
                                                     <%= student.final_classification %>
@@ -103,12 +112,14 @@
                                                         </span>
                                                         <% } %>
 
-                                                            <% if (student.manual_override) { %>
-                                                                <span class="badge bg-info text-dark ms-1"
-                                                                    title="Manually Overriden">Override</span>
-                                                                <% } %>
+                                                        <!--Highlights Overrides-->    
+                                                        <% if (student.manual_override) { %>
+                                                            <span class="badge bg-info text-dark ms-1"
+                                                                title="Manually Overriden">Override</span>
+                                                        <% } %>
                                         </td>
                                         <td class="text-end pe-4">
+                                            <!--Link to the detailed student profile-->
                                             <a href="/officer/student/<%= student.student_id %>"
                                                 class="btn btn-sm btn-outline-primary">
                                                 Manage Profile
@@ -123,6 +134,7 @@
         </div>
     </div>
 
+    <!--Add student modal-->
     <div class="modal fade" id="addStudentModal" tabindex="-1" aria-labelledby="addStudentModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -164,18 +176,21 @@
         </div>
     </div>
 
+    <!--Contextual back navigation-->
     <div class="d-flex justify-content-start mt-4 mb-2">
         <a href="/officer-dashboard" class="btn btn-outline-secondary fw-bold shadow-sm">
             &larr; Back to My Programmes
         </a>
     </div>
 
+    <!--Client-side chart for classification distribution-->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Inject EJS payload into client-side JS
             const students = <%- JSON.stringify(students) %>;
 
+            // Initialise the tally dictionary based on institutional award boundaries
             const tally = {
             'First Class Honours (1st)': 0,
             'Upper Second Class (2:1)': 0,
@@ -185,6 +200,8 @@
             'Fail': 0,
             'Pending': 0
             };
+
+            // Populate tally
             students.forEach(student => {
                 const classification = student.final_classification || 'Pending';
                 if (tally[classification] !== undefined) {
@@ -194,6 +211,7 @@
                 }
             });
 
+            // Render chart
             const ctx = document.getElementById('classificationChart').getContext('2d');
             new Chart(ctx, {
                 type: 'bar',
@@ -214,12 +232,32 @@
                         borderWidth: 1
                     }]
                 },
-                options: {
+               options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
                             display: false
+                        }
+                    },
+                    // Styling adapts axes colours to current light or dark mode state
+                    scales: {
+                        x: {
+                            ticks: {
+                                // Use a light grey for axis text
+                                color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#666'
+                            },
+                            grid: {
+                                color: document.body.classList.contains('dark-mode') ? '#444' : '#e5e5e5'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#666'
+                            },
+                            grid: {
+                                color: document.body.classList.contains('dark-mode') ? '#444' : '#e5e5e5'
+                            }
                         }
                     }
                 }
@@ -227,4 +265,5 @@
         });
     </script>
 
-    <%- include('../partials/footer') %>
+<!--Inject global footer partial-->
+<%- include('../partials/footer') %>

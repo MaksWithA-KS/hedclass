@@ -1,5 +1,7 @@
+<!--Inject the global header partial-->
 <%- include('../partials/header') %>
 
+    <!--Breadcrumb-->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb py-2 px-3 bg-light rounded shadow-sm border">
             <li class="breadcrumb-item">
@@ -13,13 +15,16 @@
         </ol>
     </nav>
 
+    <!--Page header-->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Academic Programmes</h2>
+        <!--Triggers the create programme modal-->
         <button class="btn btn-main" data-bs-toggle="modal" data-bs-target="#addProgModal">
             + Add New Programme
         </button>
     </div>
 
+    <!--Data table-->
     <div class="card shadow-sm border-0">
         <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
@@ -41,9 +46,11 @@
                                 <%= p.title %>
                             </td>
                             <td>
+                                <!--Convert decimals in database to percentages-->
                                 <%= (p.y2_weighting * 100) %>% / <%= (p.y3_weighting * 100) %>%
                             </td>
                             <td>
+                                <!--Displays assigned officers or a fallback 'Empty State' message-->
                                 <% if (p.assigned_officers) { %>
                                     <span class="badge bg-light text-dark border shadow-sm px-2 py-1">
                                         <%= p.assigned_officers %>
@@ -54,11 +61,13 @@
                                     </span>
                                 <% } %>
                             </td>
+                            <!--Triggers the edit modal-->
                             <td class="text-end">
                                 <button type="button" class="btn btn-sm btn-outline-secondary me-2"
                                     onclick="openEditModal('<%= p.programme_id %>', '<%= p.title %>', <%= p.y2_weighting %>, <%= p.y3_weighting %>)">
                                     Edit
                                 </button>
+                                <!--POST form for deletion-->
                                 <form action="/admin/programmes/delete/<%= p.programme_id %>" method="POST"
                                     class="d-inline"
                                     onsubmit="return confirm('Warning: Deleting this programme will permanently remove all associated officer assignments. Continue?');">
@@ -72,6 +81,14 @@
         </div>
     </div>
 
+    <!--Contextual Back Navigation-->
+    <div class="d-flex justify-content-start mt-4 mb-4">
+        <a href="/admin-dashboard" class="btn btn-outline-secondary fw-bold shadow-sm">
+            &larr; Back to Administrator Dashboard
+        </a>
+    </div>
+
+    <!--Create programme modal-->
     <div class="modal fade" id="addProgModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -86,6 +103,7 @@
                             <input type="text" name="title" class="form-control" required>
                         </div>
                         <div class="row">
+                            <!--Pre-filled default weightings as per standard university regulations-->
                             <div class="col-6">
                                 <label class="form-label">L5 Weight</label>
                                 <input type="number" name="y2" step="0.01" class="form-control" value="0.30">
@@ -104,6 +122,7 @@
         </div>
     </div>
 
+    <!--Edit programme modal-->
     <div class="modal fade" id="editProgModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -136,17 +155,22 @@
     </div>
 </div>
 
+<!--Client-side script to handle form population-->
 <script>
 function openEditModal(id, title, y2, y3) {
+    // Update the form's submission URL to target the correct programme ID
     document.getElementById('editProgForm').action = '/admin/programmes/edit/' + id;
     
+    // Populate input fields with existing data
     document.getElementById('edit_title').value = title;
     document.getElementById('edit_y2').value = y2;
     document.getElementById('edit_y3').value = y3;
     
+    // Trigger the modal display
     const editModal = new bootstrap.Modal(document.getElementById('editProgModal'));
     editModal.show();
 }
 </script>
 
-    <%- include('../partials/footer') %>
+<!--Inject global footer partial-->
+<%- include('../partials/footer') %>

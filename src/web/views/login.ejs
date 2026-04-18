@@ -1,3 +1,4 @@
+<!--Inject the global header partial-->
 <%- include('partials/header') %>
 
 <div class="row justify-content-center">
@@ -8,19 +9,23 @@
     <div class="card-body p-4 p-md-5">
         <h2 class="text-center fw-bold mb-3">System Login</h2>
         <p class="text-center text-muted mb-4">Please enter your login details</p>
+        <!--Handles login error-->
         <% if (locals.error) { %>
             <div class="alert alert-danger text-center" role="alert">
                 <%= error %>
             </div>
         <% } %>
+        <!--Authentication form-->
         <form action="/login" method="POST">
+            <!--Email field-->
             <div class="mb-3">
                 <label for="username" class="form-label fw-semibold">Email Address</label>
                 <input type="email" class="form-control" id="username" name="username" required placeholder="e.g. user@hedclass.ac.uk">
             </div>
+            <!--Password field-->
             <div class="mb-4">
                 <label for="password" class="form-label fw-semibold">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••"
+                <input type="password" class="form-control" id="password" name="password" required placeholder="••••••••">
             </div>
 
             <button type="submit" class="btn btn-main w-100 py-2">Log In</button>
@@ -35,6 +40,5 @@
 
 </div>
 
-</main>
-
+<!--Inject global footer partial-->
 <%- include('partials/footer') %>

@@ -24,12 +24,14 @@ To run this application locally, ensure you have the following installed:
    npm install
 
 3. **Database Configuration:**
-   * Open your MySQL client and create a new database named using the student ID:
-     CREATE DATABASE `40083161`;
-   * Ensure your database connection settings (User, Password, Host) in your application configuration match your local MySQL environment.
-   * Import your SQL files into the newly created database in the following strict order:
-     1. Execute your table creation script first to build the schema (e.g., `schema.sql`).
-     2. Execute your data seeding script second to populate the base programmes and test accounts (e.g., `test-data.sql`).
+   * Ensure your local MySQL server is running (e.g., via XAMPP, MAMP, or standard MySQL Server).
+   * Open your preferred MySQL client (such as MySQL Workbench or phpMyAdmin).
+   * Locate the setup script provided in the repository at: `src/seeder/setup.sql`
+   * Open and execute the entire `setup.sql` script. This script will automatically:
+     1. Create the required database (`40083161`).
+     2. Build all necessary schema tables with correct foreign key relations.
+     3. Seed the database with the core programmes, users, and a diverse cohort of test students.
+   * Finally, ensure your database connection settings (User, Password, Host) in your application configuration (e.g., `.env` or `db.js`) match your local MySQL environment.
 
 ## Running the Application
 

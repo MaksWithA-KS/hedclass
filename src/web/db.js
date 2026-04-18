@@ -1,5 +1,6 @@
 import mysql from 'mysql2';
 
+// Creating a connection pool
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -8,10 +9,12 @@ const db = mysql.createPool({
     port: 3306
 });
 
+// Verifying database connection
 db.getConnection((err, connection) => {
-    if (err) return console.log(err.message);
+    if (err) return console.error('Database connection failed:', err.message);
     console.log("Connected successfully");
     connection.release();
 });
 
+// Export the pool wrapped in promises
 export default db.promise();

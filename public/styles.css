@@ -1,37 +1,30 @@
-:root{
-    --uni-navy: #002b5c;
-    --uni-gold: #c5b358;
+/* ==========================================
+   1. CSS Variables
+   ========================================== */
+:root {
+    --qub-red: #D6000D;
+    --qub-dark-red: #A30009;
+    --qub-slate: #58595B;
     --light-grey: #f4f7f6;
     --white: #ffffff;
 }
 
+body.dark-mode {
+    --light-grey: #1a1a1a;
+    --white: #2d2d2d;
+    --qub-red: #c92a31; 
+    --qub-slate: #333333;
+    --qub-dark-red: #a11e24;
+    color: #e0e0e0;
+}
+
+/* ==========================================
+   2. Base Styles & Global Elements
+   ========================================== */
 body {
     background-color: var(--light-grey);
     color: #333;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-.main-header {
-    background-color: var(--uni-navy);
-    border-bottom: 4px solid var(--uni-gold);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-
-.brand-logo {
-    color: var(--white) !important;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-}
-
-.main-header .nav-link {
-    color: rgba(255, 255, 255, 0.9) !important;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.main-header .nav-link:hover {
-    color: var(--uni-gold) !important;
 }
 
 .content-area {
@@ -39,20 +32,253 @@ body {
     padding: 48px;
     margin-top: 32px;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rbga(0, 0, 0, 0.05);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
+#about-section.border-top {
+    border-top: 1px solid rgba(88, 89, 91, 0.2) !important; 
+}
+
+/* ==========================================
+   3. Typography & Logos
+   ========================================== */
+.brand-logo {
+    color: var(--white) !important;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.logo-img {
+    height: 40px;
+    width: auto;
+}
+
+.logo-dark {
+    display: none !important;
+}
+
+/* ==========================================
+   4. Header & Navigation (Light Mode Default)
+   ========================================== */
+.main-header {
+    background-color: var(--qub-red);
+    border-bottom: 4px solid var(--qub-slate);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.main-header .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.main-header .nav-link:hover {
+    color: var(--white) !important;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+.main-header .nav-item span.nav-link {
+    cursor: default;
+    border-bottom: none !important;
+}
+
+/* ==========================================
+   5. Buttons (Light Mode Default)
+   ========================================== */
 .btn-main {
-    background-color: var(--uni-navy);
+    background-color: var(--qub-red);
     color: var(--white);
-    border: 2px solid var(--uni-navy);
+    border: 2px solid var(--qub-red);
     font-weight: 600;
     transition: all 0.3s ease;
 }
 
 .btn-main:hover {
-    background-color: var(--uni-gold);
-    border-color: var(--uni-gold);
-    color: var(--uni-navy);
+    background-color: var(--white);
+    border-color: var(--qub-dark-red);
+    color: var(--qub-dark-red);
 }
 
+.main-header .btn-outline-light {
+    border-color: rgba(255, 255, 255, 0.5) !important;
+    color: var(--white) !important;
+    transition: all 0.3s ease;
+}
+
+.main-header .btn-outline-light:hover {
+    background-color: var(--white) !important;
+    color: var(--qub-red) !important; 
+    border-color: var(--white) !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ==========================================
+   6. Dark Mode Overrides
+   ========================================== */
+
+/* Logos */
+body.dark-mode .logo-light { display: none !important; }
+body.dark-mode .logo-dark { display: block !important; }
+
+/* Global Layout & Structural Utilities */
+body.dark-mode .bg-light, 
+body.dark-mode .card, 
+body.dark-mode .modal-content {
+    background-color: #2d2d2d !important;
+    border-color: #444 !important;
+}
+body.dark-mode .bg-white { background-color: transparent !important; }
+body.dark-mode .border-top { border-color: #333333 !important; }
+body.dark-mode .border-primary, 
+body.dark-mode .border-danger { border-color: var(--qub-red) !important; }
+body.dark-mode #about-section.border-top {
+    border-top: 1px solid var(--qub-red) !important;
+    opacity: 0.6;
+}
+
+/* Typography & Colours */
+body.dark-mode h1, body.dark-mode h2, body.dark-mode h3, 
+body.dark-mode h4, body.dark-mode h5, body.dark-mode h6,
+body.dark-mode p { color: #e0e0e0; }
+body.dark-mode .text-muted, body.dark-mode .form-text { color: #b0b0b0 !important; }
+body.dark-mode .text-dark { color: #f8f9fa !important; }
+body.dark-mode .text-navy { color: var(--qub-red) !important; }
+body.dark-mode .text-navy:hover { color: #ffffff !important; }
+body.dark-mode .text-danger { color: var(--qub-red) !important; }
+
+/* Header & Navigation */
+body.dark-mode .main-header {
+    background-color: #242424;
+    border-bottom: 4px solid var(--qub-red);
+}
+body.dark-mode .brand-logo { color: #ffffff !important; }
+body.dark-mode .main-header .nav-link { color: #b0b0b0 !important; }
+body.dark-mode .main-header .nav-link:hover {
+    color: #ffffff !important;
+    border-bottom: 2px solid var(--qub-red);
+}
+
+/* Buttons */
+body.dark-mode .btn-main { color: #f0f0f0; }
+body.dark-mode .btn-danger {
+    background-color: var(--qub-red) !important;
+    border-color: var(--qub-red) !important;
+}
+body.dark-mode .btn-danger:hover {
+    background-color: var(--qub-dark-red) !important;
+    border-color: var(--qub-dark-red) !important;
+}
+body.dark-mode .btn-warning {
+    background-color: #c5b358 !important;
+    border-color: #c5b358 !important;
+    color: #1a1a1a !important; 
+    font-weight: 600;
+}
+body.dark-mode .btn-warning:hover {
+    background-color: #dcd08a !important;
+    border-color: #dcd08a !important;
+    color: #000000 !important; 
+    box-shadow: 0 0 0 0.25rem rgba(197, 179, 88, 0.25) !important;
+}
+body.dark-mode .btn-outline-light,
+body.dark-mode .main-header .btn-outline-light {
+    border-color: #555 !important;
+    color: #f8f9fa !important;
+}
+body.dark-mode .btn-outline-light:hover,
+body.dark-mode .main-header .btn-outline-light:hover {
+    background-color: var(--qub-red) !important;
+    border-color: var(--qub-red) !important;
+    color: #ffffff !important;
+    box-shadow: none;
+}
+body.dark-mode .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* Tables */
+body.dark-mode .table { color: #e0e0e0 !important; }
+body.dark-mode .table td, body.dark-mode .table th { color: #f8f9fa !important; }
+body.dark-mode .table-light th {
+    background-color: #242424 !important;
+    color: #ffffff !important;
+    border-color: #444 !important;
+}
+body.dark-mode .table td {
+    border-color: #444 !important;
+    background-color: transparent !important;
+}
+body.dark-mode .table-hover > tbody > tr:hover > * {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    color: #ffffff !important;
+}
+
+/* Forms */
+body.dark-mode .form-control {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #555 !important;
+}
+body.dark-mode .form-control:focus {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: var(--qub-red) !important;
+    box-shadow: 0 0 0 0.25rem rgba(201, 42, 49, 0.25) !important;
+}
+body.dark-mode .form-label { color: #b0b0b0 !important; }
+body.dark-mode .form-control::placeholder {
+    color: #a0a0a0 !important;
+    opacity: 1;
+}
+
+/* Breadcrumbs */
+body.dark-mode .breadcrumb { background-color: transparent !important; }
+body.dark-mode .breadcrumb-item a {
+    color: var(--qub-red) !important;
+    text-decoration: none !important;
+}
+body.dark-mode .breadcrumb-item a:hover {
+    color: #ffffff !important;
+    text-decoration: underline !important;
+}
+body.dark-mode .breadcrumb-item.active {
+    color: #ffffff !important; 
+    font-weight: 500;
+}
+body.dark-mode .breadcrumb-item + .breadcrumb-item::before { color: #f8f9fa !important; }
+
+/* Badges & Alerts */
+body.dark-mode .badge.bg-light {
+    background-color: #3a3a3a !important;
+    color: #ffffff !important;
+    border-color: #555 !important;
+}
+body.dark-mode .badge.bg-info {
+    background-color: var(--qub-slate) !important;
+    color: #ffffff !important;
+    border-color: #555 !important;
+}
+body.dark-mode .badge.bg-success {
+    background-color: #2b7a4b !important;
+    color: #ffffff !important;
+}
+body.dark-mode .badge.bg-danger {
+    background-color: #a32a32 !important;
+    color: #ffffff !important;
+}
+body.dark-mode .alert-warning {
+    background-color: #332d1a !important;
+    border-color: #c5b358 !important;
+    color: #f8f9fa !important;
+}
+body.dark-mode .alert-warning .alert-heading { color: #dcd08a !important; }
+body.dark-mode .alert-warning hr {
+    border-color: #c5b358 !important;
+    opacity: 0.3;
+}
+
+/* Modals */
+body.dark-mode .modal-header,
+body.dark-mode .modal-footer { border-color: #444 !important; }
+body.dark-mode .modal-header.bg-dark {
+    background-color: var(--qub-slate) !important;
+    border-bottom: 1px solid #444 !important;
+}
