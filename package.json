@@ -1,24 +1,25 @@
 {
-  "name": "40083161",
+  "name": "hedclass",
   "version": "1.0.0",
-  "description": "To make it easy for you to get started with GitLab, here's a list of recommended next steps.",
-  "main": "index.js",
-  "directories": {
-    "doc": "docs"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://gitlab.eeecs.qub.ac.uk/40083161/hedclass.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "description": "HEdClass — a web application that automates degree classification for higher education institutions.",
+  "main": "src/web/app.js",
   "type": "module",
+  "author": "Maksymilian Niewiedzial",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/web/app.js",
+    "start:api": "node src/api/server.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "mysql",
+    "ejs",
+    "higher-education"
+  ],
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "dotenv": "^18.0.0",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
     "express-session": "^1.19.0",

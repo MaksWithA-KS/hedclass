@@ -1,7 +1,7 @@
 -- HEdClass Fresh Install & Seed Script
 
-CREATE DATABASE IF NOT EXISTS `40083161`;
-USE `40083161`;
+CREATE DATABASE IF NOT EXISTS `hedclass`;
+USE `hedclass`;
 
 -- ==========================================
 -- PART 0: CLEAN SLATE

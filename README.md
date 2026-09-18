@@ -1,69 +1,117 @@
 # HEdClass: Higher Education Classification Platform
 
-## Overview
-HEdClass is a secure, dynamic web application designed to automate the manual, spreadsheet-based degree classification process for Higher Education institutions. Built with a robust three-tier architecture, it ensures deterministic and regulatory-compliant award calculations based on a dynamic weighting model and strict resit capping rules. 
+HEdClass is a web application that replaces the manual, spreadsheet-based degree
+classification process used by higher education institutions. Classification is
+produced deterministically from a programme's weighting model and the academic
+regulations governing resits and credit progression, and every manual override is
+recorded with a written rationale so a board of examiners can audit the result.
 
-## Technical Stack
-* **Application Tier:** Node.js, Express.js
-* **Presentation Tier:** EJS (Embedded JavaScript), Bootstrap CSS
-* **Data Tier:** MySQL (Relational Database)
-* **Security:** bcrypt (Password Hashing), Session-based Authentication
+Built as a three-tier application for an MSc Web Development module at Queen's
+University Belfast.
+
+## Features
+
+* **Automated classification engine** — applies programme-specific Year 2 / Year 3
+  weightings, 40% resit capping and 360-credit progression rules.
+* **Role-based access control** — separate routing and permissions for Institutional
+  Administrators and Classification Officers.
+* **Auditable overrides** — a manual change to a classification requires a written
+  rationale, which is stored against the student record.
+* **CSV export** — generates a board of examiners report for a whole programme.
+* **Standalone REST API** — serves programme and student data as JSON on its own port.
+* **Light and dark themes** — the chosen theme persists across visits.
+
+## Technical stack
+
+| Tier | Technology |
+| :--- | :--- |
+| Application | Node.js, Express.js |
+| Presentation | EJS, Bootstrap 5 |
+| Data | MySQL (via `mysql2`) |
+| Security | bcrypt password hashing, session-based authentication |
 
 ## Prerequisites
-To run this application locally, ensure you have the following installed:
-* Node.js (v14.x or higher)
-* MySQL Server (v8.0+)
 
-## Installation & Database Setup
+* Node.js v18 or higher
+* MySQL Server 8.0 or higher
 
-1. **Clone the Repository:**
-   git clone https://gitlab.eeecs.qub.ac.uk/40083161/hedclass.git
-   cd 40083161
+## Setup
 
-2. **Install Dependencies:**
-   npm install
+**1. Clone and install**
 
-3. **Database Configuration:**
-   * Ensure your local MySQL server is running (e.g., via XAMPP, MAMP, or standard MySQL Server).
-   * Open your preferred MySQL client (such as MySQL Workbench or phpMyAdmin).
-   * Locate the setup script provided in the repository at: `src/seeder/setup.sql`
-   * Open and execute the entire `setup.sql` script. This script will automatically:
-     1. Create the required database (`40083161`).
-     2. Build all necessary schema tables with correct foreign key relations.
-     3. Seed the database with the core programmes, users, and a diverse cohort of test students.
-   * Finally, ensure your database connection settings (User, Password, Host) in your application configuration (e.g., `.env` or `db.js`) match your local MySQL environment.
+```bash
+git clone https://github.com/<your-username>/hedclass.git
+cd hedclass
+npm install
+```
 
-## Running the Application
+**2. Create the database**
 
-The system is designed with a separate REST API and Web Application for optimal load distribution.
+Start your local MySQL server, then run the seed script in a MySQL client
+(MySQL Workbench, phpMyAdmin, or the `mysql` CLI):
 
-1. **Start the Standalone REST API:**
-   * Open a terminal window and start the API service (Configured for PORT 4000):
-     node src/api/server.js
+```bash
+mysql -u root -p < src/seeder/setup.sql
+```
 
-2. **Start the Main Web Application:**
-   * Open a second terminal window and start the web application (Configured for PORT 3000):
-     node src/web/app.js
+This creates the `hedclass` database, builds the schema with its foreign key
+relations, and seeds it with programmes, users and a test cohort of students.
 
-3. **Access the System:**
-   * Open a web browser and navigate to: `http://localhost:3000`
+**3. Configure the environment**
 
-## Test Credentials
+Copy the example environment file and edit it to match your local MySQL setup:
 
-The database seeder provides the following accounts to demonstrate the Role-Based Access Control (RBAC) and user flows:
+```bash
+cp .env.example .env
+```
+
+`.env` is git-ignored and is never committed.
+
+**4. Run**
+
+The REST API and the web application run as separate processes, so start each in
+its own terminal:
+
+```bash
+npm run start:api   # REST API on http://localhost:4000
+npm start           # web application on http://localhost:3000
+```
+
+## Demo accounts
+
+The seed script creates the following accounts to demonstrate role-based access.
+These are throwaway credentials for a local demo database — they are not used
+anywhere else and are published deliberately so the app can be tried out.
 
 | Role | Email | Password |
 | :--- | :--- | :--- |
-| **Institutional Administrator** | gandalf@qub.ac.uk | yoshllntpass!1 |
-| **Classification Officer** | holmes@qub.ac.uk | elementary2$ |
-| **Classification Officer** | kenobi@qub.ac.uk | helloth3re |
+| Institutional Administrator | gandalf@qub.ac.uk | yoshllntpass!1 |
+| Classification Officer | holmes@qub.ac.uk | elementary2$ |
+| Classification Officer | kenobi@qub.ac.uk | helloth3re |
 
-## Key Features
-* **Role-Based Access Control:** Strict routing separation between Administrators and Classification Officers.
-* **Automated Classification Engine:** Enforces 360-credit progression rules, 40% resit caps, and dynamic Year 2/Year 3 weightings.
-* **Auditability:** Mandates written rationales for any manual grade overrides.
-* **Data Export:** CSV generation for board of examiner reporting.
-* **Standalone API:** Independent JSON data retrieval.
+## Project structure
 
-## Authorship
-Developed by Maksymilian Niewiedzial Student ID: 40083161
+```
+src/
+  api/       standalone REST API
+  web/       web application
+    controllers/   request handling and classification logic
+    routes/        route definitions
+    middleware/    authentication and role guards
+    views/         EJS templates
+  seeder/    database schema and seed data
+public/      stylesheets, client-side JS, images
+```
+
+## Scope and limitations
+
+This was built to an assignment brief, and a few things were out of scope:
+
+* There is no automated test suite.
+* The classification rules are implemented against one institution's regulations
+  rather than being configurable per institution.
+* The REST API is read-only and unauthenticated.
+
+## Author
+
+Maksymilian Niewiedzial

@@ -1,8 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import db from '../web/db.js';
 
 const app = express();
-const PORT = 4000;
+const PORT = Number(process.env.API_PORT) || 4000;
 
 app.use(express.json());
 

@@ -12,7 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.WEB_PORT) || 3000;
 
 // Configuring EJS
 app.set('view engine', 'ejs');
@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 // Configuring sessions
 app.use(session({
-    secret: 'hedclass-secret-key',
+    secret: process.env.SESSION_SECRET || 'hedclass-dev-secret',
     resave: false,
     saveUninitialized: false,
     cookie: { maxAge: 3600000 }
