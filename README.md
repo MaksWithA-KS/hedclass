@@ -40,7 +40,7 @@ University Belfast.
 **1. Clone and install**
 
 ```bash
-git clone https://github.com/<your-username>/hedclass.git
+git clone https://github.com/MaksWithA-KS/hedclass.git
 cd hedclass
 npm install
 ```
